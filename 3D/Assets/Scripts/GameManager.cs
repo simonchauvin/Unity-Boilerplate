@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour {
 	void OnGUI () {
 		if (paused)
 		{
-			// Unlock and show the cursor
+			// Show and unlock cursor to use the menu
 			Screen.showCursor = true;
 			Screen.lockCursor = false;
 

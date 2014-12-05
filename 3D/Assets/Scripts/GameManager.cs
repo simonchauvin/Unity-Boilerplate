@@ -32,6 +32,17 @@ public class GameManager : MonoBehaviour {
 		if (Input.GetButtonDown("Pause Menu"))
 		{
 			paused = !paused;
+			Object[] objects = FindObjectsOfType (typeof(GameObject));
+			foreach (GameObject gameObject in objects) {
+				if (paused)
+				{
+					gameObject.SendMessage ("OnPauseGame", SendMessageOptions.DontRequireReceiver);
+				}
+				else
+				{
+					gameObject.SendMessage ("OnResumeGame", SendMessageOptions.DontRequireReceiver);
+				}
+			}
 		}
 	}
 

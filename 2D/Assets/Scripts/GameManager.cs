@@ -14,9 +14,9 @@ public class GameManager : MonoBehaviour {
 	/// The size of a button.
 	/// </summary>
 	private Vector2 buttonSize;
-
+	
 	public bool paused { get; private set; }
-
+	
 	// Use this for initialization
 	void Start () {
 		// Init
@@ -32,16 +32,27 @@ public class GameManager : MonoBehaviour {
 		if (Input.GetButtonDown("Pause Menu"))
 		{
 			paused = !paused;
+			Object[] objects = FindObjectsOfType (typeof(GameObject));
+			foreach (GameObject gameObject in objects) {
+				if (paused)
+				{
+					gameObject.SendMessage ("OnPauseGame", SendMessageOptions.DontRequireReceiver);
+				}
+				else
+				{
+					gameObject.SendMessage ("OnResumeGame", SendMessageOptions.DontRequireReceiver);
+				}
+			}
 		}
 	}
-
+	
 	void OnGUI () {
 		if (paused)
 		{
 			// Show and unlock cursor to use the menu
 			Screen.showCursor = true;
 			Screen.lockCursor = false;
-
+			
 			// Draw the screen
 			GUI.Box(new Rect(menuPosition.x, menuPosition.y, menuSize.x, menuSize.y), "Pause");
 			
@@ -56,7 +67,7 @@ public class GameManager : MonoBehaviour {
 			{
 				paused = false;
 			}
-
+			
 			// Quit to the game button
 			if (GUI.Button(new Rect(menuPosition.x + 25, menuPosition.y + 110, buttonSize.x, buttonSize.y), "Quit"))
 			{

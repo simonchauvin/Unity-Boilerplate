@@ -101,6 +101,14 @@ public class GameManager : MonoBehaviour
 			}
 		}
 
+#if UNITY_WEBPLAYER
+		// Go fullscreen
+		if (Input.GetKeyDown(KeyCode.F))
+		{
+			Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, true);
+		}
+#endif
+		
 		if (Input.GetMouseButton(0) && !paused)
 		{
 			Screen.lockCursor = lockCursor;

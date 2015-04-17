@@ -9,11 +9,6 @@ public class AudioManager : MonoBehaviour
 	private static AudioManager _instance;
 
 	/// <summary>
-	/// A sound.
-	/// </summary>
-	public AudioClip aSound;
-
-	/// <summary>
 	/// The audio source.
 	/// </summary>
 	private AudioSource thisAudio;
@@ -39,20 +34,12 @@ public class AudioManager : MonoBehaviour
 	void Start ()
 	{
 		// Components
-		thisAudio = audio;
+		thisAudio = GetComponent<AudioSource>();
 	}
 
 	// Update is called once per frame
 	void Update ()
 	{
 
-	}
-
-	/// <summary>
-	/// Plays a sound.
-	/// </summary>
-	public void playASound ()
-	{
-		thisAudio.PlayOneShot(aSound, 1.0f);
 	}
 }

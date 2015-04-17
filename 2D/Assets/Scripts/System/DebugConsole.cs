@@ -104,7 +104,7 @@ public class DebugConsole : MonoBehaviour
 				if (s_Instance == null)
 				{
 					GameObject console = new GameObject();
-					console.AddComponent("DebugConsole");
+					console.AddComponent<DebugConsole>();
 					console.name = "DebugConsoleController";
 					s_Instance = FindObjectOfType(typeof(DebugConsole)) as DebugConsole;
 					DebugConsole.instance.InitGuis();
@@ -137,7 +137,7 @@ public class DebugConsole : MonoBehaviour
 			if (DebugGui == null)  // If an external GUIText is not set, provide the default GUIText
 			{
 				DebugGui = new GameObject();
-				DebugGui.AddComponent("GUIText");
+				DebugGui.AddComponent<GUIText>();
 				DebugGui.name = "DebugGUI(0)";
 				DebugGui.transform.position = defaultGuiPosition;
 				DebugGui.transform.localScale = defaultGuiScale;
@@ -193,7 +193,7 @@ public class DebugConsole : MonoBehaviour
 		{
 			if (Input.GetMouseButtonDown(0))
 			{
-				if (connectedToMouse == false && DebugGui.guiText.HitTest((Vector3)Input.mousePosition) == true)
+				if (connectedToMouse == false && DebugGui.GetComponent<GUIText>().HitTest((Vector3)Input.mousePosition) == true)
 				{
 					connectedToMouse = true;
 				}
@@ -281,7 +281,7 @@ public class DebugConsole : MonoBehaviour
 			while (x < guis.Count)
 			{
 				GameObject gui = (GameObject)guis[x];   
-				gui.guiText.text = "";
+				gui.GetComponent<GUIText>().text = "";
 				//increment and loop
 				x += 1;
 			}
@@ -345,16 +345,16 @@ public class DebugConsole : MonoBehaviour
 					//set our color
 					switch ((string)colors[x])
 					{
-					case "normal": gui.guiText.material.color = normal;
+					case "normal": gui.GetComponent<GUIText>().material.color = normal;
 						break;
-					case "warning": gui.guiText.material.color = warning;
+					case "warning": gui.GetComponent<GUIText>().material.color = warning;
 						break;
-					case "error": gui.guiText.material.color = error;
+					case "error": gui.GetComponent<GUIText>().material.color = error;
 						break;
 					}
 					
 					//now set the text for this element
-					gui.guiText.text = (string)messages[x];
+					gui.GetComponent<GUIText>().text = (string)messages[x];
 					
 					//increment and loop
 					x += 1;

@@ -8,36 +8,24 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	private static GameManager _instance;
 
+    /// <summary>
+    /// The pause menu script.
+    /// </summary>
+    private PauseMenu pauseMenu;
+
 	/// <summary>
 	/// Whether to show or hide the cursor during gameplay.
 	/// </summary>
-	public bool showCursor;
+	public bool showCursorMode;
 	/// <summary>
 	/// Whether to lock the cursor during gameplay.
 	/// </summary>
-	public bool lockCursor;
+	public CursorLockMode lockCursorMode;
 
-	/// <summary>
-	/// The position of the menu.
-	/// </summary>
-	private Vector2 menuPosition;
-	/// <summary>
-	/// The size of the menu.
-	/// </summary>
-	private Vector2 menuSize;
-	/// <summary>
-	/// The size of a button.
-	/// </summary>
-	private Vector2 buttonSize;
-
-	/// <summary>
-	/// Whether the game was paused.
-	/// </summary>
-	public bool paused { get; private set; }
-	/// <summary>
-	/// Whether the cursor was locked.
-	/// </summary>
-	private bool wasLocked = false;
+    /// <summary>
+    /// Whether the game was paused.
+    /// </summary>
+    public bool paused { get; private set; }
 
 
 	/// <summary>
@@ -60,96 +48,98 @@ public class GameManager : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		// Init
-		menuSize = new Vector2(150, 150);
-		buttonSize = new Vector2(100, 30);
-		menuPosition = new Vector2(Screen.width / 2 - menuSize.x / 2, Screen.height / 2 - menuSize.y / 2);
-		paused = false;
-		wasLocked = false;
-		Screen.lockCursor = lockCursor;
-		Screen.showCursor = showCursor;
+        // The pause menu
+        pauseMenu = GetComponent<PauseMenu>();
+
+        // Init the cursor behaviour
+        Cursor.lockState = lockCursorMode;
+        Cursor.visible = showCursorMode;
+
+        paused = false;
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
-		// Pause and unpause the game
-		if (Input.GetButtonDown("Pause Menu"))
-		{
-			if (paused)
-			{
-				Screen.lockCursor = lockCursor;
-				Screen.showCursor = showCursor;
-			}
-			else
-			{
-				Screen.lockCursor = false;
-				Screen.showCursor = true;
-			}
-			paused = !paused;
+        // Pause and unpause the game
+        if (Input.GetButtonDown("Pause Menu"))
+        {
+            if (paused)
+            {
+                hidePauseMenu();
+            }
+            else
+            {
+                showPauseMenu();
+            }
 
-			Object[] objects = FindObjectsOfType (typeof(GameObject));
-			foreach (GameObject gameObject in objects) {
-				if (paused)
-				{
-					gameObject.SendMessage("OnPauseGame", SendMessageOptions.DontRequireReceiver);
-				}
-				else
-				{
-					gameObject.SendMessage("OnResumeGame", SendMessageOptions.DontRequireReceiver);
-				}
-			}
-		}
+            // Activate and deactivate game objects
+            Object[] objects = FindObjectsOfType(typeof(GameObject));
+            foreach (GameObject gameObject in objects)
+            {
+                if (paused)
+                {
+                    gameObject.SendMessage("OnPauseGame", SendMessageOptions.DontRequireReceiver);
+                }
+                else
+                {
+                    gameObject.SendMessage("OnResumeGame", SendMessageOptions.DontRequireReceiver);
+                }
+            }
+        }
 
-#if UNITY_WEBPLAYER
+#if UNITY_WEBPLAYER || UNITY_WEBGL
 		// Go fullscreen
 		if (Input.GetKeyDown(KeyCode.F))
 		{
 			Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, true);
 		}
 #endif
-		
-		if (Input.GetMouseButton(0) && !paused)
-		{
-			Screen.lockCursor = lockCursor;
-			Screen.showCursor = showCursor;
-		}
-		if (!Screen.lockCursor && wasLocked)
-		{
-			wasLocked = false;
-		}
-		else if (Screen.lockCursor && !wasLocked)
-		{
-			wasLocked = true;
-		}
 	}
 
-	void OnGUI ()
-	{
-		if (paused)
-		{
-			// Draw the screen
-			GUI.Box(new Rect(menuPosition.x, menuPosition.y, menuSize.x, menuSize.y), "Pause");
-			
-			// Restart button
-			if (GUI.Button(new Rect(menuPosition.x + 25, menuPosition.y + 40, buttonSize.x, buttonSize.y), "Restart"))
-			{
-				Application.LoadLevel(Application.loadedLevel);
-			}
-			
-			// Return to the game button
-			if (GUI.Button(new Rect(menuPosition.x + 25, menuPosition.y + 75, buttonSize.x, buttonSize.y), "Back"))
-			{
-				paused = false;
-				Screen.lockCursor = lockCursor;
-				Screen.showCursor = showCursor;
-			}
+    /// <summary>
+    /// Fired When the player selects the restart button.
+    /// </summary>
+    public void OnRestartButton()
+    {
+        Application.LoadLevel(Application.loadedLevel);
+    }
 
-			// Quit to the game button
-			if (GUI.Button(new Rect(menuPosition.x + 25, menuPosition.y + 110, buttonSize.x, buttonSize.y), "Quit"))
-			{
-				Application.Quit();
-			}
-		}
-	}
+    /// <summary>
+    /// Fired when the player selects the back button.
+    /// </summary>
+    public void OnBackButton()
+    {
+        hidePauseMenu();
+    }
+
+    /// <summary>
+    /// Fired when the player selects the quit button.
+    /// </summary>
+    public void OnQuitButton()
+    {
+        Application.Quit();
+    }
+
+    /// <summary>
+    /// Show the pause menu and unlock/show cursor.
+    /// </summary>
+    private void showPauseMenu ()
+    {
+        pauseMenu.showMenu();
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+        paused = true;
+    }
+
+    /// <summary>
+    /// Hide the pause menu and reset cursor to wanted mode.
+    /// </summary>
+    private void hidePauseMenu()
+    {
+        pauseMenu.hideMenu();
+        Cursor.lockState = lockCursorMode;
+        Cursor.visible = showCursorMode;
+        paused = false;
+    }
 }

@@ -1,4 +1,4 @@
 Unity-Boilerplate
 =================
 
-A boilerplate for any Unity game. It contains an intro screen, an in game menu through and a shortcut for fullscreen mode.
+A simple boilerplate for any Unity game. It contains an intro screen, an in game menu, a gitignore and Unity is set for Git use.
